@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const colors = require("colors");
-const { default: EmqxAuthRule } = require("../models/emqx_auth");
 
 import EmqxAuthRule from "../models/emqx_auth";
 
