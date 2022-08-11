@@ -57,6 +57,7 @@ mongoose
     console.log("MongoDB connected successfully".green);
     console.log("******************************".green);
     console.log("\n");
+    global.check_mqtt_superuser();
   })
   .catch((err) => {
     console.log("\n");

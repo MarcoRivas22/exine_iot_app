@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const colors = require("colors");
+const { default: EmqxAuthRule } = require("../models/emqx_auth");
+
+import EmqxAuthRule from "../models/emqx_auth";
 
 const auth = {
   auth: {
@@ -32,7 +35,8 @@ Para borrar manualmente los recursos y reiniciemos node */
 //list resources
 async function listResources() {
   try {
-    const url = "http://localhost:8085/api/v4/resources/";
+    const url =
+      "http://" + process.env.EMQX_NODE_HOST + ":8085/api/v4/resources/";
 
     const res = await axios.get(url, auth);
 
@@ -90,12 +94,14 @@ async function listResources() {
 //create resources
 async function createResources() {
   try {
-    const url = "http://localhost:8085/api/v4/resources";
+    const url =
+      "http://" + process.env.EMQX_NODE_HOST + ":8085/api/v4/resources";
 
     const data1 = {
       type: "web_hook",
       config: {
-        url: "http://localhost:3001/api/v1/saver-webhook",
+        url:
+          "http://" + process.env.EMQX_NODE_HOST + ":3001/api/v1/saver-webhook",
         headers: {
           token: process.env.EMQX_API_TOKEN,
         },
@@ -107,7 +113,8 @@ async function createResources() {
     const data2 = {
       type: "web_hook",
       config: {
-        url: "http://localhost:3001/api/v1/alarm-webhook",
+        url:
+          "http://" + process.env.EMQX_NODE_HOST + "3001/api/v1/alarm-webhook",
         headers: {
           token: process.env.EMQX_API_TOKEN,
         },
@@ -131,7 +138,7 @@ async function createResources() {
     setTimeout(() => {
       console.log("***** Emqx WH resources created! :) *****".green);
       listResources();
-    }, 1000);
+    }, process.env.EMQX_RESOURCES_DELAY);
   } catch (error) {
     console.log("Error creating resources");
     console.log(error);
@@ -141,5 +148,31 @@ async function createResources() {
 setTimeout(() => {
   listResources();
 }, 1000);
+
+global.check_mqtt_superuser = async function checkMqttSuperUser() {
+  try {
+    const superusers = await EmqxAuthRule.find({ type: "superuser" });
+
+    if (superusers.length > 0) {
+      return true;
+    } else if (superusers.length == 0) {
+      await EmqxAuthRule.create({
+        publish: ["#"],
+        subscribe: ["#"],
+        userId: "aaaaaaaaaaaa",
+        username: "superuser",
+        password: "superuser",
+        type: "superuser",
+        time: Date.now(),
+        updatedTime: Date.now(),
+      });
+
+      console.log("Mqtt superuser created!".green);
+    }
+  } catch (error) {
+    console.log("Error creating mqtt superuser");
+    console.log(error);
+  }
+};
 
 module.exports = router;
