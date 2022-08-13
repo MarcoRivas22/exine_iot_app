@@ -113,7 +113,7 @@ async function createResources() {
       type: "web_hook",
       config: {
         url:
-          "http://" + process.env.EMQX_NODE_HOST + "3001/api/v1/alarm-webhook",
+          "http://" + process.env.EMQX_NODE_HOST + ":3001/api/v1/alarm-webhook",
         headers: {
           token: process.env.EMQX_API_TOKEN,
         },
@@ -144,10 +144,6 @@ async function createResources() {
   }
 }
 
-setTimeout(() => {
-  listResources();
-}, 1000);
-
 global.check_mqtt_superuser = async function checkMqttSuperUser() {
   try {
     const superusers = await EmqxAuthRule.find({ type: "superuser" });
@@ -173,5 +169,9 @@ global.check_mqtt_superuser = async function checkMqttSuperUser() {
     console.log(error);
   }
 };
+
+setTimeout(() => {
+  listResources();
+}, process.env.EMQX_RESOURCES_DELAY);
 
 module.exports = router;
