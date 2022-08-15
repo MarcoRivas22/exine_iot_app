@@ -4,7 +4,7 @@ export default {
    ** Headers of the page
    */
   head: {
-    title: "IoT Dashboard",
+    title: "Exine - Dashboard",
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
@@ -49,7 +49,7 @@ export default {
    */
   plugins: [`~/plugins/dashboard-plugin.js`],
   //autoimport
-  components: false,
+  components: true,
   /*
    ** Nuxt.js dev-modules
    */
@@ -63,7 +63,6 @@ export default {
   axios: {
     baseURL: process.env.AXIOS_BASE_URL,
   },
-
   env: {
     mqtt_prefix: process.env.MQTT_PREFIX,
     mqtt_host: process.env.MQTT_HOST,
@@ -71,8 +70,8 @@ export default {
   },
 
   server: {
-    port: 3000,
-    host: "0.0.0.0",
+    port: 3000, // default: 3000
+    host: "0.0.0.0", // default: localhost
   },
 
   serverMiddleware: {
